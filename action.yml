@@ -1,0 +1,11 @@
+name: 'get-tfenv-versions'
+description: 'Display tree of tfenv versions in directory'
+author: 'Michael Holtzman @ Trepp'
+inputs:
+  folder:
+    required: true
+    description: Folder name to search, with trailing slash
+    default: './'
+runs:
+  using: 'node12'
+  main: 'dist/index.js'
