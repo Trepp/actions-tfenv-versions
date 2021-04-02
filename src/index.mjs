@@ -1,13 +1,12 @@
-// import fs from "fs/promises"
-const fs = require('fs').promises;
-const core = require('@actions/core');
+import fs from 'fs';
+import core from '@actions/core';
+import { generateMarkdownTable } from './utils.mjs';
 
 async function run() {
   const folder = core.getInput('folder', { required: true });
   const results = [];
 
   for await (const file of getFiles(folder, null)) {
-    // const version = (await fs.readFile(file.path, 'utf8')).split('\n')[0];
     results.unshift({
       path: file.path,
       version: file.version,
@@ -15,8 +14,16 @@ async function run() {
     });
   }
 
-  // TODO save as file and possibly upload as artifact
-  console.log(JSON.stringify(results, null, 2));
+  let markdown = '# tfenv versions\n\n';
+  markdown += generateMarkdownTable(results);
+  console.log(markdown);
+
+  try {
+    await fs.promises.mkdir('./reports');
+  } catch (err) {
+    // no-op
+  }
+  await fs.promises.writeFile('./reports/tfenv-versions.md', markdown, 'utf8');
 }
 
 /**
@@ -26,13 +33,15 @@ async function run() {
  * @param {string} parentVersion The tf version number from a preceding parent folder
  */
 async function* getFiles(path, parentVersion) {
-  const entries = await fs.readdir(path, { withFileTypes: true });
+  const entries = await fs.promises.readdir(path, { withFileTypes: true });
   let currentVersion = parentVersion;
   let foundTfFile = false;
 
   // check if current folder contains .terraform-version file
   try {
-    const foundVersion = (await fs.readFile(`${path}.terraform-version`, 'utf8')).split('\n')[0];
+    const foundVersion = (await fs.promises.readFile(`${path}.terraform-version`, 'utf8')).split(
+      '\n',
+    )[0];
     currentVersion = foundVersion;
     foundTfFile = true;
   } catch (err) {

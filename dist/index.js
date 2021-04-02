@@ -1,11 +1,11 @@
 require('./sourcemap-register.js');module.exports =
 /******/ (() => { // webpackBootstrap
+/******/ 	"use strict";
 /******/ 	var __webpack_modules__ = ({
 
-/***/ 241:
+/***/ 351:
 /***/ (function(__unused_webpack_module, exports, __nccwpck_require__) {
 
-"use strict";
 
 var __importStar = (this && this.__importStar) || function (mod) {
     if (mod && mod.__esModule) return mod;
@@ -91,7 +91,6 @@ function escapeProperty(s) {
 /***/ 186:
 /***/ (function(__unused_webpack_module, exports, __nccwpck_require__) {
 
-"use strict";
 
 var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
     function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
@@ -110,7 +109,7 @@ var __importStar = (this && this.__importStar) || function (mod) {
     return result;
 };
 Object.defineProperty(exports, "__esModule", ({ value: true }));
-const command_1 = __nccwpck_require__(241);
+const command_1 = __nccwpck_require__(351);
 const file_command_1 = __nccwpck_require__(717);
 const utils_1 = __nccwpck_require__(278);
 const os = __importStar(__nccwpck_require__(87));
@@ -336,7 +335,6 @@ exports.getState = getState;
 /***/ 717:
 /***/ (function(__unused_webpack_module, exports, __nccwpck_require__) {
 
-"use strict";
 
 // For internal use, subject to change.
 var __importStar = (this && this.__importStar) || function (mod) {
@@ -372,7 +370,6 @@ exports.issueCommand = issueCommand;
 /***/ 278:
 /***/ ((__unused_webpack_module, exports) => {
 
-"use strict";
 
 // We use any as a valid input type
 /* eslint-disable @typescript-eslint/no-explicit-any */
@@ -395,19 +392,381 @@ exports.toCommandValue = toCommandValue;
 
 /***/ }),
 
-/***/ 351:
-/***/ ((__unused_webpack_module, __unused_webpack_exports, __nccwpck_require__) => {
+/***/ 976:
+/***/ ((module) => {
 
-// import fs from "fs/promises"
-const fs = __nccwpck_require__(747).promises;
-const core = __nccwpck_require__(186);
+/*!
+ * repeat-string <https://github.com/jonschlinkert/repeat-string>
+ *
+ * Copyright (c) 2014-2015, Jon Schlinkert.
+ * Licensed under the MIT License.
+ */
+
+
+
+/**
+ * Results cache
+ */
+
+var res = '';
+var cache;
+
+/**
+ * Expose `repeat`
+ */
+
+module.exports = repeat;
+
+/**
+ * Repeat the given `string` the specified `number`
+ * of times.
+ *
+ * **Example:**
+ *
+ * ```js
+ * var repeat = require('repeat-string');
+ * repeat('A', 5);
+ * //=> AAAAA
+ * ```
+ *
+ * @param {String} `string` The string to repeat
+ * @param {Number} `number` The number of times to repeat the string
+ * @return {String} Repeated string
+ * @api public
+ */
+
+function repeat(str, num) {
+  if (typeof str !== 'string') {
+    throw new TypeError('expected a string');
+  }
+
+  // cover common, quick use cases
+  if (num === 1) return str;
+  if (num === 2) return str + str;
+
+  var max = str.length * num;
+  if (cache !== str || typeof cache === 'undefined') {
+    cache = str;
+    res = '';
+  } else if (res.length >= max) {
+    return res.substr(0, max);
+  }
+
+  while (max > res.length && num > 1) {
+    if (num & 1) {
+      res += str;
+    }
+
+    num >>= 1;
+    str += str;
+  }
+
+  res += str;
+  res = res.substr(0, max);
+  return res;
+}
+
+
+/***/ }),
+
+/***/ 268:
+/***/ ((__unused_webpack___webpack_module__, __webpack_exports__, __nccwpck_require__) => {
+
+// ESM COMPAT FLAG
+__nccwpck_require__.r(__webpack_exports__);
+
+// EXTERNAL MODULE: external "fs"
+var external_fs_ = __nccwpck_require__(747);
+// EXTERNAL MODULE: ./node_modules/@actions/core/lib/core.js
+var core = __nccwpck_require__(186);
+// EXTERNAL MODULE: ./node_modules/repeat-string/index.js
+var repeat_string = __nccwpck_require__(976);
+// CONCATENATED MODULE: ./node_modules/markdown-table/index.js
+
+
+/**
+ * @typedef MarkdownTableOptions
+ * @property {string|string[]} [align]
+ * @property {boolean} [padding=true]
+ * @property {boolean} [delimiterStart=true]
+ * @property {boolean} [delimiterStart=true]
+ * @property {boolean} [delimiterEnd=true]
+ * @property {boolean} [alignDelimiters=true]
+ * @property {(value: string) => number} [stringLength]
+ */
+
+/**
+ * Create a table from a matrix of strings.
+ *
+ * @param {string[][]} table
+ * @param {MarkdownTableOptions} [options]
+ * @returns {string}
+ */
+function markdownTable(table, options) {
+  var settings = options || {}
+  var align = (settings.align || []).concat()
+  var stringLength = settings.stringLength || defaultStringLength
+  /** @type {number[]} Character codes as symbols for alignment per column. */
+  var alignments = []
+  var rowIndex = -1
+  /** @type {string[][]} Cells per row. */
+  var cellMatrix = []
+  /** @type {number[][]} Sizes of each cell per row. */
+  var sizeMatrix = []
+  /** @type {number[]} */
+  var longestCellByColumn = []
+  var mostCellsPerRow = 0
+  /** @type {number} */
+  var columnIndex
+  /** @type {string[]} Cells of current row */
+  var row
+  /** @type {number[]} Sizes of current row */
+  var sizes
+  /** @type {number} Sizes of current cell */
+  var size
+  /** @type {string} Current cell */
+  var cell
+  /** @type {string[]} */
+  var lines
+  /** @type {string[]} Chunks of current line. */
+  var line
+  /** @type {string} */
+  var before
+  /** @type {string} */
+  var after
+  /** @type {number} */
+  var code
+
+  // This is a superfluous loop if we don’t align delimiters, but otherwise we’d
+  // do superfluous work when aligning, so optimize for aligning.
+  while (++rowIndex < table.length) {
+    columnIndex = -1
+    row = []
+    sizes = []
+
+    if (table[rowIndex].length > mostCellsPerRow) {
+      mostCellsPerRow = table[rowIndex].length
+    }
+
+    while (++columnIndex < table[rowIndex].length) {
+      cell = serialize(table[rowIndex][columnIndex])
+
+      if (settings.alignDelimiters !== false) {
+        size = stringLength(cell)
+        sizes[columnIndex] = size
+
+        if (
+          longestCellByColumn[columnIndex] === undefined ||
+          size > longestCellByColumn[columnIndex]
+        ) {
+          longestCellByColumn[columnIndex] = size
+        }
+      }
+
+      row.push(cell)
+    }
+
+    cellMatrix[rowIndex] = row
+    sizeMatrix[rowIndex] = sizes
+  }
+
+  // Figure out which alignments to use.
+  columnIndex = -1
+
+  if (typeof align === 'object' && 'length' in align) {
+    while (++columnIndex < mostCellsPerRow) {
+      alignments[columnIndex] = toAlignment(align[columnIndex])
+    }
+  } else {
+    code = toAlignment(align)
+
+    while (++columnIndex < mostCellsPerRow) {
+      alignments[columnIndex] = code
+    }
+  }
+
+  // Inject the alignment row.
+  columnIndex = -1
+  row = []
+  sizes = []
+
+  while (++columnIndex < mostCellsPerRow) {
+    code = alignments[columnIndex]
+    before = ''
+    after = ''
+
+    if (code === 99 /* `c` */) {
+      before = ':'
+      after = ':'
+    } else if (code === 108 /* `l` */) {
+      before = ':'
+    } else if (code === 114 /* `r` */) {
+      after = ':'
+    }
+
+    // There *must* be at least one hyphen-minus in each alignment cell.
+    size =
+      settings.alignDelimiters === false
+        ? 1
+        : Math.max(
+            1,
+            longestCellByColumn[columnIndex] - before.length - after.length
+          )
+
+    cell = before + repeat_string('-', size) + after
+
+    if (settings.alignDelimiters !== false) {
+      size = before.length + size + after.length
+
+      if (size > longestCellByColumn[columnIndex]) {
+        longestCellByColumn[columnIndex] = size
+      }
+
+      sizes[columnIndex] = size
+    }
+
+    row[columnIndex] = cell
+  }
+
+  // Inject the alignment row.
+  cellMatrix.splice(1, 0, row)
+  sizeMatrix.splice(1, 0, sizes)
+
+  rowIndex = -1
+  lines = []
+
+  while (++rowIndex < cellMatrix.length) {
+    row = cellMatrix[rowIndex]
+    sizes = sizeMatrix[rowIndex]
+    columnIndex = -1
+    line = []
+
+    while (++columnIndex < mostCellsPerRow) {
+      cell = row[columnIndex] || ''
+      before = ''
+      after = ''
+
+      if (settings.alignDelimiters !== false) {
+        size = longestCellByColumn[columnIndex] - (sizes[columnIndex] || 0)
+        code = alignments[columnIndex]
+
+        if (code === 114 /* `r` */) {
+          before = repeat_string(' ', size)
+        } else if (code === 99 /* `c` */) {
+          if (size % 2) {
+            before = repeat_string(' ', size / 2 + 0.5)
+            after = repeat_string(' ', size / 2 - 0.5)
+          } else {
+            before = repeat_string(' ', size / 2)
+            after = before
+          }
+        } else {
+          after = repeat_string(' ', size)
+        }
+      }
+
+      if (settings.delimiterStart !== false && !columnIndex) {
+        line.push('|')
+      }
+
+      if (
+        settings.padding !== false &&
+        // Don’t add the opening space if we’re not aligning and the cell is
+        // empty: there will be a closing space.
+        !(settings.alignDelimiters === false && cell === '') &&
+        (settings.delimiterStart !== false || columnIndex)
+      ) {
+        line.push(' ')
+      }
+
+      if (settings.alignDelimiters !== false) {
+        line.push(before)
+      }
+
+      line.push(cell)
+
+      if (settings.alignDelimiters !== false) {
+        line.push(after)
+      }
+
+      if (settings.padding !== false) {
+        line.push(' ')
+      }
+
+      if (
+        settings.delimiterEnd !== false ||
+        columnIndex !== mostCellsPerRow - 1
+      ) {
+        line.push('|')
+      }
+    }
+
+    lines.push(
+      settings.delimiterEnd === false
+        ? line.join('').replace(/ +$/, '')
+        : line.join('')
+    )
+  }
+
+  return lines.join('\n')
+}
+
+/**
+ * @param {string|null|undefined} [value]
+ * @returns {string}
+ */
+function serialize(value) {
+  return value === null || value === undefined ? '' : String(value)
+}
+
+/**
+ * @param {string} value
+ * @returns {number}
+ */
+function defaultStringLength(value) {
+  return value.length
+}
+
+/**
+ * @param {string} value
+ * @returns {number}
+ */
+function toAlignment(value) {
+  var code = typeof value === 'string' ? value.charCodeAt(0) : 0
+
+  return code === 67 /* `C` */ || code === 99 /* `c` */
+    ? 99 /* `c` */
+    : code === 76 /* `L` */ || code === 108 /* `l` */
+    ? 108 /* `l` */
+    : code === 82 /* `R` */ || code === 114 /* `r` */
+    ? 114 /* `r` */
+    : 0
+}
+
+// CONCATENATED MODULE: ./src/utils.mjs
+
+
+function generateMarkdownTable(folders) {
+  const columnHeaders = ['Path', 'Version', '.terraform-version file'];
+  const data = [columnHeaders];
+
+  const table = markdownTable(
+    data.concat(folders.map((f) => [f.path, f.version, f.containsTfFile])),
+  );
+
+  return table;
+}
+
+// CONCATENATED MODULE: ./src/index.mjs
+
+
+
 
 async function run() {
   const folder = core.getInput('folder', { required: true });
   const results = [];
 
   for await (const file of getFiles(folder, null)) {
-    // const version = (await fs.readFile(file.path, 'utf8')).split('\n')[0];
     results.unshift({
       path: file.path,
       version: file.version,
@@ -415,8 +774,16 @@ async function run() {
     });
   }
 
-  // TODO save as file and possibly upload as artifact
-  console.log(JSON.stringify(results, null, 2));
+  let markdown = '# tfenv versions\n\n';
+  markdown += generateMarkdownTable(results);
+  console.log(markdown);
+
+  try {
+    await external_fs_.promises.mkdir('./reports');
+  } catch (err) {
+    // no-op
+  }
+  await external_fs_.promises.writeFile('./reports/tfenv-versions.md', markdown, 'utf8');
 }
 
 /**
@@ -426,13 +793,15 @@ async function run() {
  * @param {string} parentVersion The tf version number from a preceding parent folder
  */
 async function* getFiles(path, parentVersion) {
-  const entries = await fs.readdir(path, { withFileTypes: true });
+  const entries = await external_fs_.promises.readdir(path, { withFileTypes: true });
   let currentVersion = parentVersion;
   let foundTfFile = false;
 
   // check if current folder contains .terraform-version file
   try {
-    const foundVersion = (await fs.readFile(`${path}.terraform-version`, 'utf8')).split('\n')[0];
+    const foundVersion = (await external_fs_.promises.readFile(`${path}.terraform-version`, 'utf8')).split(
+      '\n',
+    )[0];
     currentVersion = foundVersion;
     foundTfFile = true;
   } catch (err) {
@@ -455,7 +824,6 @@ run();
 /***/ 747:
 /***/ ((module) => {
 
-"use strict";
 module.exports = require("fs");;
 
 /***/ }),
@@ -463,7 +831,6 @@ module.exports = require("fs");;
 /***/ 87:
 /***/ ((module) => {
 
-"use strict";
 module.exports = require("os");;
 
 /***/ }),
@@ -471,7 +838,6 @@ module.exports = require("os");;
 /***/ 622:
 /***/ ((module) => {
 
-"use strict";
 module.exports = require("path");;
 
 /***/ })
@@ -508,13 +874,24 @@ module.exports = require("path");;
 /******/ 	}
 /******/ 	
 /************************************************************************/
+/******/ 	/* webpack/runtime/make namespace object */
+/******/ 	(() => {
+/******/ 		// define __esModule on exports
+/******/ 		__nccwpck_require__.r = (exports) => {
+/******/ 			if(typeof Symbol !== 'undefined' && Symbol.toStringTag) {
+/******/ 				Object.defineProperty(exports, Symbol.toStringTag, { value: 'Module' });
+/******/ 			}
+/******/ 			Object.defineProperty(exports, '__esModule', { value: true });
+/******/ 		};
+/******/ 	})();
+/******/ 	
 /******/ 	/* webpack/runtime/compat */
 /******/ 	
 /******/ 	__nccwpck_require__.ab = __dirname + "/";/************************************************************************/
 /******/ 	// module exports must be returned from runtime so entry inlining is disabled
 /******/ 	// startup
 /******/ 	// Load entry module and return exports
-/******/ 	return __nccwpck_require__(351);
+/******/ 	return __nccwpck_require__(268);
 /******/ })()
 ;
 //# sourceMappingURL=index.js.map
