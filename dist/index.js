@@ -403,8 +403,7 @@ const fs = __nccwpck_require__(747).promises;
 const core = __nccwpck_require__(186);
 
 async function run() {
-  // const folder = core.getInput('folder', { required: true });
-  const folder = '../artemis/';
+  const folder = core.getInput('folder', { required: true });
   const results = [];
 
   for await (const file of getFiles(folder, null)) {

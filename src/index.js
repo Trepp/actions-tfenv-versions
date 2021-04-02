@@ -3,8 +3,7 @@ const fs = require('fs').promises;
 const core = require('@actions/core');
 
 async function run() {
-  // const folder = core.getInput('folder', { required: true });
-  const folder = '../artemis/';
+  const folder = core.getInput('folder', { required: true });
   const results = [];
 
   for await (const file of getFiles(folder, null)) {
