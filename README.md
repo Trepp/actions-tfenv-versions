@@ -1,8 +1,8 @@
 # Display tfenv Version Files
 
-This GitHub action will crawl a directory structure and create a report of the `.terraform-version` file and version numbers for each directory.
+This GitHub action will crawl a directory structure and create a report of the presence of `.terraform-version` files and associated version numbers for each sub-directory. The report generated respects the hierarchical nature of the file located in parent directories. The `.terraform-version` file works with both [tfenv](https://github.com/tfutils/tfenv#terraform-version-file) as well as [tfswitch](https://tfswitch.warrensbox.com/Quick-Start/).
 
-## Inputs
+## Action Inputs
 
 ### `folder`
 
@@ -10,13 +10,13 @@ This GitHub action will crawl a directory structure and create a report of the `
 
 ## How to Use
 
-This action will create a markdown file named `tfenv-versions.md` in a reports folder after the action complete. This can then be uploaded as an artifact to GitHub. For easy viewing the markdown data is also prinpted out to the console for easy viewing on GitHub.
+This action will create a markdown file named `tfenv-versions.md` in a reports folder after the action completes. This can then be uploaded as an artifact to GitHub. For easy viewing the markdown data is also prinpted out to the console for easy viewing on GitHub.
 
 ```yaml
 on: [push]
 
 jobs:
-  checkov-job:
+  tfenv-versions-job:
     runs-on: ubuntu-latest
     name: tfenv-versions
     steps:
