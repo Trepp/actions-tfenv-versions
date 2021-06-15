@@ -1,7 +1,11 @@
 {
   "name": "actions-tfenv-versions",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Display tree of tfenv versions in directory",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Trepp/actions-tfenv-versions.git"
+  },
   "main": "./src/index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
@@ -18,12 +22,12 @@
   "author": "Michael Holtzman",
   "license": "MIT",
   "dependencies": {
-    "@actions/core": "^1.2.6",
+    "@actions/core": "1.4.0",
     "markdown-table": "^3.0.0"
   },
   "devDependencies": {
     "@trepp/eslint-config": "^1.0.0",
-    "@vercel/ncc": "^0.27.0",
+    "@vercel/ncc": "^0.28.6",
     "eslint": "^7.23.0",
     "prettier": "^2.2.1",
     "typescript": "^4.2.3"
