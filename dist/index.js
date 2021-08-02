@@ -474,83 +474,6 @@ exports.toCommandValue = toCommandValue;
 
 /***/ }),
 
-/***/ 976:
-/***/ ((module) => {
-
-/*!
- * repeat-string <https://github.com/jonschlinkert/repeat-string>
- *
- * Copyright (c) 2014-2015, Jon Schlinkert.
- * Licensed under the MIT License.
- */
-
-
-
-/**
- * Results cache
- */
-
-var res = '';
-var cache;
-
-/**
- * Expose `repeat`
- */
-
-module.exports = repeat;
-
-/**
- * Repeat the given `string` the specified `number`
- * of times.
- *
- * **Example:**
- *
- * ```js
- * var repeat = require('repeat-string');
- * repeat('A', 5);
- * //=> AAAAA
- * ```
- *
- * @param {String} `string` The string to repeat
- * @param {Number} `number` The number of times to repeat the string
- * @return {String} Repeated string
- * @api public
- */
-
-function repeat(str, num) {
-  if (typeof str !== 'string') {
-    throw new TypeError('expected a string');
-  }
-
-  // cover common, quick use cases
-  if (num === 1) return str;
-  if (num === 2) return str + str;
-
-  var max = str.length * num;
-  if (cache !== str || typeof cache === 'undefined') {
-    cache = str;
-    res = '';
-  } else if (res.length >= max) {
-    return res.substr(0, max);
-  }
-
-  while (max > res.length && num > 1) {
-    if (num & 1) {
-      res += str;
-    }
-
-    num >>= 1;
-    str += str;
-  }
-
-  res += str;
-  res = res.substr(0, max);
-  return res;
-}
-
-
-/***/ }),
-
 /***/ 747:
 /***/ ((module) => {
 
@@ -629,14 +552,10 @@ __nccwpck_require__.r(__webpack_exports__);
 var external_fs_ = __nccwpck_require__(747);
 // EXTERNAL MODULE: ./node_modules/@actions/core/lib/core.js
 var core = __nccwpck_require__(186);
-// EXTERNAL MODULE: ./node_modules/repeat-string/index.js
-var repeat_string = __nccwpck_require__(976);
 ;// CONCATENATED MODULE: ./node_modules/markdown-table/index.js
-
-
 /**
  * @typedef MarkdownTableOptions
- * @property {string|string[]} [align]
+ * @property {string|null|Array.<string|null|undefined>} [align]
  * @property {boolean} [padding=true]
  * @property {boolean} [delimiterStart=true]
  * @property {boolean} [delimiterStart=true]
@@ -648,44 +567,42 @@ var repeat_string = __nccwpck_require__(976);
 /**
  * Create a table from a matrix of strings.
  *
- * @param {string[][]} table
+ * @param {Array.<Array.<string|null|undefined>>} table
  * @param {MarkdownTableOptions} [options]
  * @returns {string}
  */
 function markdownTable(table, options) {
-  var settings = options || {}
-  var align = (settings.align || []).concat()
-  var stringLength = settings.stringLength || defaultStringLength
+  const settings = options || {}
+  const align = (settings.align || []).concat()
+  const stringLength = settings.stringLength || defaultStringLength
   /** @type {number[]} Character codes as symbols for alignment per column. */
-  var alignments = []
-  var rowIndex = -1
+  const alignments = []
+  let rowIndex = -1
   /** @type {string[][]} Cells per row. */
-  var cellMatrix = []
+  const cellMatrix = []
   /** @type {number[][]} Sizes of each cell per row. */
-  var sizeMatrix = []
+  const sizeMatrix = []
   /** @type {number[]} */
-  var longestCellByColumn = []
-  var mostCellsPerRow = 0
+  const longestCellByColumn = []
+  let mostCellsPerRow = 0
   /** @type {number} */
-  var columnIndex
+  let columnIndex
   /** @type {string[]} Cells of current row */
-  var row
+  let row
   /** @type {number[]} Sizes of current row */
-  var sizes
+  let sizes
   /** @type {number} Sizes of current cell */
-  var size
+  let size
   /** @type {string} Current cell */
-  var cell
-  /** @type {string[]} */
-  var lines
+  let cell
   /** @type {string[]} Chunks of current line. */
-  var line
+  let line
   /** @type {string} */
-  var before
+  let before
   /** @type {string} */
-  var after
+  let after
   /** @type {number} */
-  var code
+  let code
 
   // This is a superfluous loop if we don’t align delimiters, but otherwise we’d
   // do superfluous work when aligning, so optimize for aligning.
@@ -763,7 +680,7 @@ function markdownTable(table, options) {
             longestCellByColumn[columnIndex] - before.length - after.length
           )
 
-    cell = before + repeat_string('-', size) + after
+    cell = before + '-'.repeat(size) + after
 
     if (settings.alignDelimiters !== false) {
       size = before.length + size + after.length
@@ -783,7 +700,8 @@ function markdownTable(table, options) {
   sizeMatrix.splice(1, 0, sizes)
 
   rowIndex = -1
-  lines = []
+  /** @type {string[]} */
+  const lines = []
 
   while (++rowIndex < cellMatrix.length) {
     row = cellMatrix[rowIndex]
@@ -801,17 +719,17 @@ function markdownTable(table, options) {
         code = alignments[columnIndex]
 
         if (code === 114 /* `r` */) {
-          before = repeat_string(' ', size)
+          before = ' '.repeat(size)
         } else if (code === 99 /* `c` */) {
           if (size % 2) {
-            before = repeat_string(' ', size / 2 + 0.5)
-            after = repeat_string(' ', size / 2 - 0.5)
+            before = ' '.repeat(size / 2 + 0.5)
+            after = ' '.repeat(size / 2 - 0.5)
           } else {
-            before = repeat_string(' ', size / 2)
+            before = ' '.repeat(size / 2)
             after = before
           }
         } else {
-          after = repeat_string(' ', size)
+          after = ' '.repeat(size)
         }
       }
 
@@ -878,11 +796,11 @@ function defaultStringLength(value) {
 }
 
 /**
- * @param {string} value
+ * @param {string|null|undefined} value
  * @returns {number}
  */
 function toAlignment(value) {
-  var code = typeof value === 'string' ? value.charCodeAt(0) : 0
+  const code = typeof value === 'string' ? value.charCodeAt(0) : 0
 
   return code === 67 /* `C` */ || code === 99 /* `c` */
     ? 99 /* `c` */
