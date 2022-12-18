@@ -10,7 +10,7 @@ This GitHub action will crawl a directory structure and create a report of the p
 
 ## How to Use
 
-This action will create a markdown file named `tfenv-versions.md` in a reports folder after the action completes. This can then be uploaded as an artifact to GitHub. For easy viewing the markdown data is also prinpted out to the console for easy viewing on GitHub.
+This action will create a markdown file named `tfenv-versions.md` in a `reports` folder after the action completes. This can then be uploaded as an artifact to GitHub. For easy viewing the markdown data is also prinpted out to the console for easy viewing on GitHub.
 
 ```yaml
 on: [push]
@@ -21,13 +21,13 @@ jobs:
     name: tfenv-versions
     steps:
       - name: Checkout repo
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
       - name: list-tfenv-versions
         uses: Trepp/actions-tfenv-versions@v1
         with:
           folder: './'
       - name: Archive tfenv-versions results
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v3
         with:
           name: tfenv-versions
           path: reports/*.md
