@@ -7,5 +7,5 @@ inputs:
     description: Folder name to search, with trailing slash
     default: './'
 runs:
-  using: 'node16'
+  using: 'node20'
   main: 'dist/index.mjs'
