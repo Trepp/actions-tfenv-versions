@@ -1,4 +1,4 @@
-import fs from 'fs';
+import fs from 'node:fs';
 import core from '@actions/core';
 import { generateMarkdownTable } from './utils.mjs';
 
