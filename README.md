@@ -21,13 +21,13 @@ jobs:
     name: tfenv-versions
     steps:
       - name: Checkout repo
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
       - name: list-tfenv-versions
         uses: Trepp/actions-tfenv-versions@v1
         with:
           folder: './'
       - name: Archive tfenv-versions results
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: tfenv-versions
           path: reports/*.md
