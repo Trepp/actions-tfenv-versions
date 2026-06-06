@@ -1,9 +1,9 @@
 import fs from 'node:fs';
-import core from '@actions/core';
+import { getInput } from '@actions/core';
 import { generateMarkdownTable } from './utils.mjs';
 
 async function run() {
-  const folder = core.getInput('folder', { required: true });
+  const folder = getInput('folder', { required: true });
   const results = [];
 
   for await (const file of getFiles(folder, null)) {
@@ -20,7 +20,7 @@ async function run() {
 
   try {
     await fs.promises.mkdir('./reports');
-  } catch (err) {
+  } catch {
     // no-op
   }
   await fs.promises.writeFile('./reports/tfenv-versions.md', markdown, 'utf8');
@@ -44,7 +44,7 @@ async function* getFiles(path, parentVersion) {
     )[0];
     currentVersion = foundVersion;
     foundTfFile = true;
-  } catch (err) {
+  } catch {
     // no-op, folder doesn't contain file
   }
 
